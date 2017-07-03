@@ -38,12 +38,23 @@
  * MIT License. See https://github.com/joewalnes/jstinytest/
  */
 
-// TODO: Get success to be green.
-// TODO: Make sure only one error per failure goes to the console.
-// TODO: Get failures to be red.
-// TODO: Show stack traces for failures.
-// TODO: Only show stack traces if error is expanded.
-// TODO: Output summary statistics to the DOM.
+var TinyTestHelper = {
+    renderStats: function(tests, failures) {
+      var numberOfTests = Object.keys(tests).length;
+      var successes = numberOfTests - failures;
+
+      console.groupCollapsed('TEST RESULTS');
+      console.log(`%cNumber of tests: ${numberOfTests}`, 'color: blue');
+      console.log(`%cFailures: ${failures}`, 'color: red');
+      console.log(`%cSuccesses: ${successes}`, 'color: green');
+      console.groupEnd();
+
+      var summaryString = `Ran ${numberOfTests} tests. ${successes} Passed, ${failures} Failed.`;
+      var summaryElement = document.createElement('h1');
+      summaryElement.textContent = summaryString;
+      document.body.appendChild(summaryElement);
+    }
+};
 
 var TinyTest = {
 
@@ -53,10 +64,10 @@ var TinyTest = {
             var testAction = tests[testName];
             try {
                 testAction.apply(this);
-                console.log(`%c${testName} PASS`, 'color: green;');
+                console.log(`%c${testName} PASS`, 'color: green');
             } catch (e) {
                 failures++;
-                console.groupCollapsed(`%c${testName} FAIL`, 'color: red;')
+                console.groupCollapsed(`%c${testName} FAIL`, 'color: red')
                 console.error(e.stack);
                 console.groupEnd();
             }
@@ -64,6 +75,8 @@ var TinyTest = {
         setTimeout(function() { // Give document a chance to complete
             if (window.document && document.body) {
                 document.body.style.backgroundColor = (failures == 0 ? '#99ff99' : '#ff9999');
+
+                TinyTestHelper.renderStats(tests, failures);
             }
         }, 0);
     },
@@ -89,7 +102,6 @@ var TinyTest = {
             throw new Error('assertStrictEquals() "' + expected + '" !== "' + actual + '"');
         }
     },
-
 };
 
 var fail               = TinyTest.fail.bind(TinyTest),
