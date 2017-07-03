@@ -53,11 +53,12 @@ var TinyTest = {
             var testAction = tests[testName];
             try {
                 testAction.apply(this);
-                console.log(`%c${testName} OK`, 'color: green;');
+                console.log(`%c${testName} PASS`, 'color: green;');
             } catch (e) {
                 failures++;
-                console.log(`%c${testName} FAILED`, 'color: red;');
+                console.groupCollapsed(`%c${testName} FAIL`, 'color: red;')
                 console.error(e.stack);
+                console.groupEnd();
             }
         }
         setTimeout(function() { // Give document a chance to complete
